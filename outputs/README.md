@@ -1,0 +1,3 @@
+# Outputs
+
+Generated artifacts

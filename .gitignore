@@ -1,7 +1,5 @@
-# Personal reference / planning docs — not part of the submitted project
-PLAN.md
-TASKS.md
-Formatted_CW_Descriptor_Version2.pdf
+# Personal working files
+Temp/
 
 # Python
 __pycache__/
@@ -10,8 +8,11 @@ __pycache__/
 venv/
 .ipynb_checkpoints/
 
-# Datasets & model artifacts (too large / licensed — download via script instead)
-data/
+# Datasets & model artifacts
+data/*
+!data/README.md
+outputs/*
+!outputs/README.md
 *.pth
 *.pt
 *.h5
