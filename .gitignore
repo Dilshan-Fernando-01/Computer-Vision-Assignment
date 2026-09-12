@@ -1,0 +1,22 @@
+# Personal reference / planning docs — not part of the submitted project
+PLAN.md
+TASKS.md
+Formatted_CW_Descriptor_Version2.pdf
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Datasets & model artifacts (too large / licensed — download via script instead)
+data/
+*.pth
+*.pt
+*.h5
+*.ckpt
+
+# OS / editor
+.DS_Store
+.vscode/
