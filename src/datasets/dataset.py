@@ -8,6 +8,8 @@ from torch.utils.data import Dataset
 
 from src.preprocessing.preprocess import preprocess_image
 
+cv2.setNumThreads(0)
+
 IMAGES_DIR = os.path.join(
     os.path.dirname(__file__), "..", "..", "data", "raw", "ddr", "DR_grading", "DR_grading",
 )
