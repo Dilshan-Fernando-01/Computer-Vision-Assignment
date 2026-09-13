@@ -1,0 +1,21 @@
+Test accuracy: 0.8621607237892496
+Test macro F1: 0.6692852123607222
+
+              precision    recall  f1-score   support
+
+     Stage 0       0.92      0.94      0.93       940
+     Stage 1       0.42      0.29      0.35        95
+     Stage 2       0.83      0.87      0.85       672
+     Stage 3       0.50      0.31      0.39        35
+     Stage 4       0.88      0.78      0.83       137
+
+    accuracy                           0.86      1879
+   macro avg       0.71      0.64      0.67      1879
+weighted avg       0.85      0.86      0.86      1879
+
+Confusion matrix:
+[[887  15  38   0   0]
+ [ 27  28  39   1   0]
+ [ 42  22 587  10  11]
+ [  0   0  21  11   3]
+ [  4   1  25   0 107]]

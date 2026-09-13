@@ -17,6 +17,11 @@ data/processed/*
 !data/processed/splits/*.csv
 outputs/*
 !outputs/README.md
+!outputs/history/
+outputs/history/*
+!outputs/history/*.json
+!outputs/history/*.png
+!outputs/history/*.txt
 *.pth
 *.pt
 *.h5
