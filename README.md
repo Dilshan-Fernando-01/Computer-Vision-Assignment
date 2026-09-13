@@ -60,7 +60,7 @@ pip install -r requirements.txt
 
 ## Dataset
 
-Built on the [IDRiD](https://idrid.grand-challenge.org/) dataset. See [`data/README.md`](data/README.md) for how to obtain and place it.
+Built on the [DDR](https://github.com/nkicsl/DDR-dataset) (Diabetic Retinopathy Dataset), 12,522 labeled fundus images including 757 with pixel-level lesion segmentation masks. See [`data/README.md`](data/README.md) for how to obtain and place it.
 
 ## Demo
 

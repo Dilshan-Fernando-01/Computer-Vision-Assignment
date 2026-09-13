@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader, WeightedRandomSampler
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from src.augmentation.augment import get_training_augmentations, make_sample_weights
 from src.datasets.dataset import DRGradingDataset
-from src.models.build_model import build_model
+from src.models.ordinal import CoralCriterion, CoralModel, coral_predict
 from src.training.train import evaluate, fit, get_device
 
 IMAGE_SIZE = 512
@@ -41,23 +41,24 @@ def main():
     val_loader = DataLoader(val_ds, batch_size=BATCH_SIZE, num_workers=4)
     test_loader = DataLoader(test_ds, batch_size=BATCH_SIZE, num_workers=4)
 
-    criterion = torch.nn.CrossEntropyLoss()
-    model = build_model("efficientnet_b0", num_classes=5, pretrained=True)
+    criterion = CoralCriterion(num_classes=5)
+    model = CoralModel("efficientnet_b0", num_classes=5, pretrained=True)
 
-    checkpoint_path = os.path.join(OUTPUTS_DIR, "checkpoints", "variant_a_efficientnet_b0.pt")
+    checkpoint_path = os.path.join(OUTPUTS_DIR, "checkpoints", "variant_b_coral_efficientnet_b0.pt")
     history = fit(
         model, train_loader, val_loader, criterion,
         epochs=EPOCHS, lr=LR, patience=PATIENCE,
         checkpoint_path=checkpoint_path, device=device,
+        predict_fn=coral_predict,
     )
 
     history_dir = os.path.join(OUTPUTS_DIR, "history")
     os.makedirs(history_dir, exist_ok=True)
-    with open(os.path.join(history_dir, "variant_a_history.json"), "w") as f:
+    with open(os.path.join(history_dir, "variant_b_history.json"), "w") as f:
         json.dump(history, f, indent=2)
 
     model.load_state_dict(torch.load(checkpoint_path, map_location=device))
-    test_metrics = evaluate(model, test_loader, criterion, device)
+    test_metrics = evaluate(model, test_loader, criterion, device, predict_fn=coral_predict)
 
     report = classification_report(
         test_metrics["labels"], test_metrics["preds"],
@@ -65,14 +66,14 @@ def main():
     )
     cm = confusion_matrix(test_metrics["labels"], test_metrics["preds"])
 
-    print("\n=== Test set results (Variant A, DDR) ===")
+    print("\n=== Test set results (Variant B - CORAL ordinal) ===")
     print("Test accuracy:", test_metrics["accuracy"])
     print("Test macro F1:", test_metrics["macro_f1"])
     print(report)
     print("Confusion matrix (rows=true, cols=predicted):")
     print(np.array(cm))
 
-    with open(os.path.join(history_dir, "variant_a_test_report.txt"), "w") as f:
+    with open(os.path.join(history_dir, "variant_b_test_report.txt"), "w") as f:
         f.write(f"Test accuracy: {test_metrics['accuracy']}\n")
         f.write(f"Test macro F1: {test_metrics['macro_f1']}\n\n")
         f.write(report)

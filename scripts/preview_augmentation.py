@@ -5,20 +5,11 @@ import cv2
 import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from src.preprocessing.preprocess import preprocess_image
 from src.augmentation.augment import get_training_augmentations
+from src.datasets.dataset import IMAGES_DIR
+from src.preprocessing.preprocess import preprocess_image
 
-IMAGE_PATH = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "data",
-    "raw",
-    "disease_grading",
-    "B. Disease Grading",
-    "1. Original Images",
-    "a. Training Set",
-    "IDRiD_021.jpg",  
-)
+IMAGE_PATH = os.path.join(IMAGES_DIR, "007-2809-100.jpg")
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "outputs", "augmentation_preview")
 
 
@@ -42,7 +33,7 @@ def main():
         axes[i + 1].set_title(f"Augmented sample {i + 1}")
         axes[i + 1].axis("off")
 
-    fig.suptitle("IDRiD_021.jpg - real Stage 1 (Mild) example")
+    fig.suptitle("007-2809-100.jpg - real Stage 1 (Mild) example, DDR dataset")
     fig.tight_layout()
     out_path = os.path.join(OUTPUT_DIR, "stage1_augmentation.png")
     fig.savefig(out_path, dpi=120)

@@ -5,28 +5,19 @@ import cv2
 import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from src.datasets.dataset import IMAGES_DIR
 from src.preprocessing.preprocess import crop_to_circle, normalize_illumination, resize
 
-GRADING_TRAIN_DIR = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "data",
-    "raw",
-    "disease_grading",
-    "B. Disease Grading",
-    "1. Original Images",
-    "a. Training Set",
-)
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "outputs", "preprocessing_preview")
 
-SAMPLE_IMAGES = ["IDRiD_001.jpg", "IDRiD_003.jpg", "IDRiD_010.jpg"]
+SAMPLE_IMAGES = ["007-5988-300.jpg", "007-2809-100.jpg", "007-0004-000.jpg"]
 
 
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     for filename in SAMPLE_IMAGES:
-        path = os.path.join(GRADING_TRAIN_DIR, filename)
+        path = os.path.join(IMAGES_DIR, filename)
         original = cv2.imread(path)
         if original is None:
             print(f"Could not read {path}, skipping.")

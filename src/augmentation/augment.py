@@ -17,7 +17,12 @@ def get_training_augmentations(image_size: int = 512) -> A.Compose:
 
 def compute_class_weights(labels: list[int], num_classes: int = 5) -> np.ndarray:
     counts = np.bincount(labels, minlength=num_classes).astype(np.float64)
-    counts[counts == 0] = 1  
+    counts[counts == 0] = 1
     weights = 1.0 / counts
     weights = weights / weights.mean()
     return weights
+
+
+def make_sample_weights(labels: list[int], num_classes: int = 5) -> np.ndarray:
+    class_weights = compute_class_weights(labels, num_classes)
+    return np.array([class_weights[label] for label in labels])

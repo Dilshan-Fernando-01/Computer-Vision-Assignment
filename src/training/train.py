@@ -16,7 +16,11 @@ def get_device() -> torch.device:
     return torch.device("cpu")
 
 
-def train_one_epoch(model, loader: DataLoader, optimizer, criterion, device) -> tuple[float, float]:
+def _default_predict(outputs: torch.Tensor) -> torch.Tensor:
+    return outputs.argmax(dim=1)
+
+
+def train_one_epoch(model, loader: DataLoader, optimizer, criterion, device, predict_fn=_default_predict) -> tuple[float, float]:
     model.train()
     total_loss, correct, total = 0.0, 0, 0
 
@@ -30,14 +34,14 @@ def train_one_epoch(model, loader: DataLoader, optimizer, criterion, device) -> 
         optimizer.step()
 
         total_loss += loss.item() * images.size(0)
-        correct += (outputs.argmax(dim=1) == labels).sum().item()
+        correct += (predict_fn(outputs) == labels).sum().item()
         total += images.size(0)
 
     return total_loss / total, correct / total
 
 
 @torch.no_grad()
-def evaluate(model, loader: DataLoader, criterion, device) -> dict:
+def evaluate(model, loader: DataLoader, criterion, device, predict_fn=_default_predict) -> dict:
     model.eval()
     total_loss, correct, total = 0.0, 0, 0
     all_preds, all_labels = [], []
@@ -47,7 +51,7 @@ def evaluate(model, loader: DataLoader, criterion, device) -> dict:
         outputs = model(images)
         loss = criterion(outputs, labels)
 
-        preds = outputs.argmax(dim=1)
+        preds = predict_fn(outputs)
         total_loss += loss.item() * images.size(0)
         correct += (preds == labels).sum().item()
         total += images.size(0)
@@ -74,6 +78,7 @@ def fit(
     patience: int = 7,
     checkpoint_path: str = "outputs/checkpoints/model.pt",
     device: torch.device | None = None,
+    predict_fn=_default_predict,
 ) -> dict:
     device = device or get_device()
     model.to(device)
@@ -89,8 +94,8 @@ def fit(
     epochs_without_improvement = 0
 
     for epoch in range(1, epochs + 1):
-        train_loss, train_acc = train_one_epoch(model, train_loader, optimizer, criterion, device)
-        val_metrics = evaluate(model, val_loader, criterion, device)
+        train_loss, train_acc = train_one_epoch(model, train_loader, optimizer, criterion, device, predict_fn)
+        val_metrics = evaluate(model, val_loader, criterion, device, predict_fn)
 
         history["train_loss"].append(train_loss)
         history["train_acc"].append(train_acc)

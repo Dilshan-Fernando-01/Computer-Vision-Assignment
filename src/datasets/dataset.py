@@ -8,19 +8,15 @@ from torch.utils.data import Dataset
 
 from src.preprocessing.preprocess import preprocess_image
 
-IMAGES_DIR_TRAIN = os.path.join(
-    os.path.dirname(__file__), "..", "..", "data", "raw", "disease_grading",
-    "B. Disease Grading", "1. Original Images", "a. Training Set",
-)
-IMAGES_DIR_TEST = os.path.join(
-    os.path.dirname(__file__), "..", "..", "data", "raw", "disease_grading",
-    "B. Disease Grading", "1. Original Images", "b. Testing Set",
+IMAGES_DIR = os.path.join(
+    os.path.dirname(__file__), "..", "..", "data", "raw", "ddr", "DR_grading", "DR_grading",
 )
 
 
-class IDRiDGradingDataset(Dataset):
+class DRGradingDataset(Dataset):
 
-    def __init__(self, csv_path: str, images_dir: str, image_size: int = 512, transform=None):
+
+    def __init__(self, csv_path: str, images_dir: str = IMAGES_DIR, image_size: int = 512, transform=None):
         self.images_dir = images_dir
         self.image_size = image_size
         self.transform = transform
