@@ -11,6 +11,10 @@ venv/
 # Datasets & model artifacts
 data/*
 !data/README.md
+!data/processed/
+data/processed/*
+!data/processed/splits/
+!data/processed/splits/*.csv
 outputs/*
 !outputs/README.md
 *.pth

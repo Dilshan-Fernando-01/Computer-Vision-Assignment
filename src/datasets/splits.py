@@ -3,7 +3,11 @@ import os
 
 from sklearn.model_selection import train_test_split
 
-GRADING_CSV = os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw", "ddr", "DR_grading.csv")
+
+GRADING_CSV = os.environ.get(
+    "DDR_GRADING_CSV",
+    os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw", "ddr", "DR_grading.csv"),
+)
 SPLITS_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "processed", "splits")
 
 

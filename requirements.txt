@@ -3,7 +3,8 @@ torchvision
 timm
 albumentations
 opencv-python
-pytorch-grad-cam
+grad-cam
+coral-pytorch
 scikit-learn
 numpy
 pandas
@@ -11,3 +12,4 @@ matplotlib
 seaborn
 gradio
 Pillow
+kaggle
