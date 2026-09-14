@@ -2,7 +2,8 @@ import albumentations as A
 import numpy as np
 
 
-def get_training_augmentations(image_size: int = 512) -> A.Compose:
+def get_training_augmentations(image_size: int = 512, with_lesion: bool = False) -> A.Compose:
+    additional_targets = {"lesion": "mask"} if with_lesion else None
     return A.Compose(
         [
             A.Rotate(limit=25, p=0.7),
@@ -11,7 +12,8 @@ def get_training_augmentations(image_size: int = 512) -> A.Compose:
             A.RandomBrightnessContrast(brightness_limit=0.15, contrast_limit=0.15, p=0.6),
             A.Affine(scale=(0.9, 1.1), translate_percent=(0.0, 0.05), p=0.5),
             A.GaussNoise(std_range=(0.02, 0.08), p=0.2),
-        ]
+        ],
+        additional_targets=additional_targets,
     )
 
 

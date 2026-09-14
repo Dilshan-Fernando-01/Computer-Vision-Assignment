@@ -1,22 +1,26 @@
-
+from __future__ import annotations
 
 import cv2
 import numpy as np
 
 
-def crop_to_circle(image: np.ndarray, threshold: int = 10) -> np.ndarray:
-    """Crop away the black background surrounding the circular retina."""
+def crop_to_circle_bbox(image: np.ndarray, threshold: int = 10) -> tuple[int, int, int, int]:
+
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     mask = gray > threshold
 
     if not mask.any():
-        return image
+        return 0, image.shape[0] - 1, 0, image.shape[1] - 1
 
     rows = np.any(mask, axis=1)
     cols = np.any(mask, axis=0)
     top, bottom = np.where(rows)[0][[0, -1]]
     left, right = np.where(cols)[0][[0, -1]]
+    return top, bottom, left, right
 
+
+def crop_to_circle(image: np.ndarray, threshold: int = 10) -> np.ndarray:
+    top, bottom, left, right = crop_to_circle_bbox(image, threshold)
     return image[top : bottom + 1, left : right + 1]
 
 
