@@ -22,8 +22,12 @@ outputs/history/*
 !outputs/history/*.json
 !outputs/history/*.png
 !outputs/history/*.txt
-*.pth
+
+!outputs/checkpoints/
+outputs/checkpoints/*
 *.pt
+!outputs/checkpoints/variant_a_efficientnet_b0.pt
+*.pth
 *.h5
 *.ckpt
 
