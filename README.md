@@ -15,7 +15,7 @@
 
 Diabetic Retinopathy (DR) is a complication of diabetes that damages the blood vessels in the retina and is a leading cause of preventable blindness worldwide. Early detection of its severity stage is critical, since treatment options and urgency differ significantly between mild and advanced disease. This project builds an image-based system that classifies a fundus (retina) photograph into one of five clinically recognized DR severity stages — No DR, Mild, Moderate, Severe, and Proliferative — following the International Clinical Diabetic Retinopathy (ICDR) grading scale.
 
-The system goes beyond a standard image classifier: it combines retina-specific preprocessing, a lesion-aware architecture that fuses classical computer vision lesion detection (microaneurysms, haemorrhages, exudates) with a transfer-learned CNN, and an ordinal classification approach that reflects the fact that DR stages are ordered rather than unrelated categories. Model decisions are made interpretable through Grad-CAM visualizations, and low-confidence predictions are flagged for specialist referral rather than presented as certain. The trained model is deployed as a live, publicly accessible demo.
+Beyond a standard image classifier, this project runs a genuine ablation study: a transfer-learned CNN baseline, a CORAL-based ordinal loss variant (since DR stages are ordered, not unrelated categories), and a variant fusing classical computer-vision lesion detection (microaneurysms, haemorrhages, exudates) into the CNN. The baseline came out strongest overall — the lesion-fusion variant is a genuine negative result, diagnosed rather than hidden — so the baseline is what's deployed in the live demo. Model decisions are made interpretable through Grad-CAM visualizations, and low-confidence predictions are flagged for specialist referral rather than presented as certain.
 
 ---
 
@@ -24,11 +24,25 @@ The system goes beyond a standard image classifier: it combines retina-specific 
 - **Retina-Specific Preprocessing** — Circular cropping, illumination normalization, and contrast enhancement tailored to fundus photography
 - **Data Augmentation & Class Balancing** — Rotation, flipping, zoom, and brightness/contrast adjustments, with class-weighted sampling to address the natural imbalance across DR severity stages
 - **Lesion-Aware Hybrid Architecture** — Classical CV lesion segmentation (microaneurysms, haemorrhages, exudates) fused with a transfer-learned CNN backbone, rather than treating classification as a black box
-- **Ordinal Stage Classification** — An ordinal loss function reflecting that the five DR stages are ordered by severity, not independent classes
+- **Ordinal Stage Classification** — A CORAL-based ordinal loss reflecting that the five DR stages are ordered by severity, not independent classes
 - **Explainability (Grad-CAM)** — Visual heatmaps showing which retinal regions drove each prediction, so results can be sanity-checked against actual lesions
-- **Confidence & Uncertainty Flagging** — Low-confidence predictions are flagged for specialist referral instead of being presented as definitive
-- **Ablation Study** — Systematic comparison across baseline, ordinal-loss, lesion-fusion, and combined model variants, evaluated on accuracy, precision, recall, F1-score, and confusion matrices
-- **Live Public Demo** — An interactive interface deployed on Hugging Face Spaces, where a fundus image can be uploaded to receive a predicted stage, confidence score, and Grad-CAM overlay
+- **Low-Confidence Referral Flagging** — Predictions below a confidence threshold are flagged for specialist review instead of being presented as definitive
+- **Ablation Study** — Baseline, ordinal-loss, and lesion-fusion variants trained and compared on accuracy, precision, recall, F1-score, and confusion matrices — including an honest negative result (lesion fusion underperformed the baseline) with a diagnosed cause, not just a leaderboard
+- **Live Public Demo** — An interactive Streamlit app, deployed publicly, where a fundus image can be uploaded to receive predicted stage probabilities, a confidence score, and a Grad-CAM overlay
+
+---
+
+## Results
+
+Trained and evaluated on the DDR dataset (12,522 fundus images, stratified 70/15/15 split), held-out test set of 1,879 images:
+
+| Variant | Accuracy | Macro F1 | Notes |
+|---|---|---|---|
+| A — Baseline CNN (EfficientNet-B0) | **86.2%** | **0.669** | Strongest overall; used in the deployed demo |
+| B — + Ordinal loss (CORAL) | 84.9% | 0.665 | Near-tie overall, but notably better Stage 3 (Severe) recall (0.54 vs 0.31) |
+| C — + Classical lesion-fusion | 84.5% | 0.635 | Genuine negative result — the classical lesion detector's own accuracy against ground truth was weak (Dice 0.097), and the added channel appears to have introduced noise rather than signal |
+
+A combined (B+C) variant was deliberately not trained, since C's fusion channel was shown to hurt rather than help — full reasoning in the project's development log.
 
 ---
 
@@ -39,15 +53,16 @@ src/
   preprocessing/     retina-specific image preprocessing
   augmentation/       data augmentation pipeline
   datasets/           dataset loading, splits, class balancing
-  models/             CNN backbones, ordinal loss, lesion-fusion architecture
-  training/           training loops, experiment configs
-  evaluation/         metrics, plots, ablation study
-  explainability/     Grad-CAM and confidence/uncertainty estimation
-scripts/              dataset download and setup utilities
-notebooks/            Colab training notebooks
-demo/                 Gradio demo app (deployed to Hugging Face Spaces)
+  models/             CNN backbones, ordinal loss (CORAL), lesion-fusion architecture
+  lesion/             classical (non-learned) lesion candidate detection + evaluation
+  training/           training loop, early stopping, checkpointing
+  explainability/     Grad-CAM
+scripts/              dataset download, preprocessing/lesion previews, local training reference
+notebooks/            Kaggle training notebooks (Variants A/B/C)
+demo/                 predictor.py (shared model/inference logic), app.py (Gradio, local testing),
+                       streamlit_app.py (Streamlit, deployed live demo)
 data/                 dataset (not tracked in git — see data/README.md)
-outputs/              trained model outputs, plots (not tracked in git — see outputs/README.md)
+outputs/              trained checkpoints, evaluation history, Grad-CAM outputs (mostly not tracked — see outputs/README.md)
 ```
 
 ## Setup
@@ -64,7 +79,9 @@ Built on the [DDR](https://github.com/nkicsl/DDR-dataset) (Diabetic Retinopathy 
 
 ## Demo
 
-Live demo: _link added once deployed_
+Live demo: [computer-vision-assignment-d34cmkaxxs5nj9pshsztom.streamlit.app](https://computer-vision-assignment-d34cmkaxxs5nj9pshsztom.streamlit.app)
+
+Upload a fundus photo (or pick one of the 5 built-in examples, one per stage) to get predicted stage probabilities, a confidence score, a low-confidence referral flag, and a Grad-CAM heatmap. Runs the baseline (Variant A) model — see [Results](#results) above for why.
 
 ## Report & Video
 
